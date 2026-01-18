@@ -1,8 +1,10 @@
 package model;
 
+import exception.InvalidInputException;
+
 import java.util.ArrayList;
 
-public class Series extends Content{
+public class Series extends Content implements Playable{
     private ArrayList<Episode> episodes;
 
     public Series(int id, String name, String author, double rating, Episode episode){
@@ -33,5 +35,16 @@ public class Series extends Content{
         return "Series";
     }
 
+    @Override
+    public void validate() throws InvalidInputException {
+        if(episodes.getFirst() == null){
+            throw new InvalidInputException("Invalid input");
+        }
+    }
+
+    @Override
+    public void play(){
+        System.out.println("Play first episode: " + episodes.getFirst().getName());
+    }
 
 }
