@@ -1,7 +1,9 @@
 package model;
 
 
-abstract class Content {
+import exception.InvalidInputException;
+
+abstract class Content implements Validatable{
     private int id;
     private String name;
     private String author;
@@ -48,5 +50,12 @@ abstract class Content {
                             "Author: " + author + "\n" +
                             "Rating: " + rating + "/10" + "\n" +
                             "Duration: " + countDuration());
+    }
+
+    @Override
+    public void validate() throws InvalidInputException {
+        if(id <= 0 || name.isEmpty() || rating < 0){
+            throw new InvalidInputException("Invalid input");
+        }
     }
 }
