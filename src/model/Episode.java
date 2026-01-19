@@ -22,6 +22,10 @@ public class Episode implements Validatable, Playable{
         this.duration = duration;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public int getId() {
         return id;
     }

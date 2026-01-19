@@ -8,7 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class SeriesRepository {
-    public void create(Series series) {
+    public Series create(Series series) {
 
         try {
             Connection con = DatabaseConnection.getConnection();
@@ -17,6 +17,19 @@ public class SeriesRepository {
             ps.setInt(1, series.getId());
             ps.setString(2, series.getName());
             ps.setFloat(3, series.getRating());
+
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows == 0) {
+                throw new DatabaseOperationException("Creating series failed, no rows affected.");
+            }
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys.next()) {
+                    series.setId(keys.getInt(1));
+                    return series;
+                } else {
+                    throw new DatabaseOperationException("Creating series failed, no ID obtained.");
+                }
+            }
 
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while creating series: " + e.getMessage());
@@ -63,16 +76,22 @@ public class SeriesRepository {
         }
     }
 
-    public void update(int id, Series series) {
+    public Series update(int id, Series series) {
 
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("UPDATE series SET name = ?, duration = ?, rating = ? WHERE id = ?");
+            PreparedStatement ps = con.prepareStatement("UPDATE series SET name = ?, rating = ? WHERE id = ?");
 
             ps.setString(1, series.getName());
-            ps.setInt(2, series.countDuration());
-            ps.setFloat(3, series.getRating());
-            ps.setInt(4, id);
+            ps.setFloat(2, series.getRating());
+            ps.setInt(3, id);
+
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows == 0) {
+                throw new ResourceNotFoundException("Series with id=" + id + " not found (update failed)");
+            }
+
+            return getById(id);
 
 
         } catch (SQLException e) {
@@ -93,6 +112,22 @@ public class SeriesRepository {
 
         }catch (SQLException e){
             throw new DatabaseOperationException("DB error while deleting series: " + e.getMessage());
+        }
+    }
+
+    public boolean existsByName(String name) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement("SELECT 1 FROM series WHERE name = ?");
+
+            ps.setString(1, name);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("DB error while checking series duplicate: " + e.getMessage());
         }
     }
 }

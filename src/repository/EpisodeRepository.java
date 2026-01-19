@@ -9,7 +9,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class EpisodeRepository {
-    public void create(Episode episode) {
+    public Episode create(Episode episode) {
 
         try {
             Connection con = DatabaseConnection.getConnection();
@@ -20,6 +20,19 @@ public class EpisodeRepository {
             ps.setInt(3, episode.getDuration());
             ps.setInt(4, episode.getSeries_id());
 
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows == 0) {
+                throw new DatabaseOperationException("Creating episode failed, no rows affected.");
+            }
+
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys.next()) {
+                    episode.setId(keys.getInt(1));
+                    return episode;
+                } else {
+                    throw new DatabaseOperationException("Creating episode failed, no ID obtained.");
+                }
+            }
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while creating episode: " + e.getMessage());
         }
@@ -67,7 +80,7 @@ public class EpisodeRepository {
         }
     }
 
-    public void update(int id, Episode episode) {
+    public Episode update(int id, Episode episode) {
 
         try {
             Connection con = DatabaseConnection.getConnection();
@@ -77,7 +90,13 @@ public class EpisodeRepository {
             ps.setInt(2, episode.getDuration());
             ps.setInt(3, episode.getSeries_id());
             ps.setInt(4, id);
-            
+
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows == 0) {
+                throw new ResourceNotFoundException("Episode with id=" + id + " not found (update failed)");
+            }
+            return getById(id);
+
 
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while updating film: " + e.getMessage());
@@ -97,6 +116,23 @@ public class EpisodeRepository {
 
         }catch (SQLException e){
             throw new DatabaseOperationException("DB error while deleting film: " + e.getMessage());
+        }
+    }
+
+    public boolean existsBySeriesIdAndEpisodeName(int series_id, String name) {
+
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement("SELECT 1 FROM episodes WHERE series_id = ? AND name = ?");
+            ps.setInt(1, series_id);
+            ps.setString(2, name);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("DB error while checking episode duplicate: " + e.getMessage());
         }
     }
 }

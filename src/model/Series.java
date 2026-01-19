@@ -36,6 +36,7 @@ public class Series extends Content implements Playable{
 
     @Override
     public void validate() throws InvalidInputException {
+        super.validate();
         if(episodes.getFirst() == null){
             throw new InvalidInputException("Invalid input");
         }

@@ -9,7 +9,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class FilmRepository {
-    public void create(Film film) {
+    public Film create(Film film) {
 
         try {
             Connection con = DatabaseConnection.getConnection();
@@ -19,6 +19,20 @@ public class FilmRepository {
             ps.setString(2, film.getName());
             ps.setInt(3, film.countDuration());
             ps.setFloat(4, film.getRating());
+
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows == 0) {
+                throw new DatabaseOperationException("Creating film failed, no rows affected.");
+            }
+
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys.next()) {
+                    film.setId(keys.getInt(1));
+                    return film;
+                } else {
+                    throw new DatabaseOperationException("Creating film failed, no ID obtained.");
+                }
+            }
 
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while creating film: " + e.getMessage());
@@ -67,7 +81,7 @@ public class FilmRepository {
         }
     }
 
-    public void update(int id, Film film) {
+    public Film update(int id, Film film) {
 
         try {
             Connection con = DatabaseConnection.getConnection();
@@ -78,7 +92,12 @@ public class FilmRepository {
             ps.setFloat(3, film.getRating());
             ps.setInt(4, id);
 
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows == 0) {
+                throw new ResourceNotFoundException("Film with id=" + id + " not found (update failed)");
+            }
 
+            return getById(id);
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while updating film: " + e.getMessage());
         }
@@ -99,4 +118,20 @@ public class FilmRepository {
             throw new DatabaseOperationException("DB error while deleting film: " + e.getMessage());
         }
     }
+    public boolean existsByName(String name) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement("SELECT 1 FROM films WHERE name = ?");
+
+            ps.setString(1, name);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("DB error while checking film duplicate: " + e.getMessage());
+        }
+    }
+
 }
