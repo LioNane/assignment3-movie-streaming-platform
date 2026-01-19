@@ -5,8 +5,8 @@ import exception.InvalidInputException;
 public class Film extends Content implements Playable{
     private int duration;
 
-    public Film(int id, String name, String author, int duration, double rating){
-        super(id, name, author, rating);
+    public Film(int id, String name, int duration, float rating){
+        super(id, name, rating);
         this.duration = duration;
     }
 

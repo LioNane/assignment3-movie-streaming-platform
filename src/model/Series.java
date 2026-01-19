@@ -7,14 +7,13 @@ import java.util.ArrayList;
 public class Series extends Content implements Playable{
     private ArrayList<Episode> episodes;
 
-    public Series(int id, String name, String author, double rating, Episode episode){
-        super(id, name, author, rating);
+    public Series(int id, String name, float rating){
+        super(id, name, rating);
         episodes = new ArrayList<>();
-        episodes.add(episode);
     }
 
-    public Series(int id, String name, String author, double rating, ArrayList<Episode> episodes){
-        super(id, name, author, rating);
+    public Series(int id, String name, float rating, ArrayList<Episode> episodes){
+        super(id, name, rating);
         this.episodes = episodes;
     }
 

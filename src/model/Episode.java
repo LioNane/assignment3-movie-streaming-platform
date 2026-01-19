@@ -7,11 +7,27 @@ public class Episode implements Validatable, Playable{
     private int id;
     private String name;
     private int duration;
+    private int series_id;
+
+    public Episode(int id, String name, int duration, int series_id){
+        this.id = id;
+        this.name = name;
+        this.duration = duration;
+        this.series_id = series_id;
+    }
 
     public Episode(int id, String name, int duration){
         this.id = id;
         this.name = name;
         this.duration = duration;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getSeries_id() {
+        return series_id;
     }
 
     public String getName() {
