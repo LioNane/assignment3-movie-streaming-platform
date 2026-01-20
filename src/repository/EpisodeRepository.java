@@ -9,11 +9,15 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class EpisodeRepository {
+    private Connection con = null;
+    private PreparedStatement ps = null;
+    private ResultSet rs = null;
+
     public Episode create(Episode episode) {
 
         try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("INSERT INTO episodes VALUES (?,?,?,?)");
+            con = DatabaseConnection.getConnection();
+            ps = con.prepareStatement("INSERT INTO episodes VALUES (?,?,?,?)");
 
             ps.setInt(1, episode.getId());
             ps.setString(2, episode.getName());
@@ -25,25 +29,25 @@ public class EpisodeRepository {
                 throw new DatabaseOperationException("Creating episode failed, no rows affected.");
             }
 
-            try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) {
-                    episode.setId(keys.getInt(1));
-                    return episode;
-                } else {
-                    throw new DatabaseOperationException("Creating episode failed, no ID obtained.");
-                }
-            }
+            return episode;
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while creating episode: " + e.getMessage());
+        } finally {
+            try {
+                ps.close();
+                con.close();
+            } catch (SQLException throwables){
+                throwables.printStackTrace();
+            }
         }
     }
 
     public ArrayList<Episode> getAll(){
         ArrayList<Episode> episodes = new ArrayList<>();
         try{
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM episodes");
-            ResultSet rs = ps.executeQuery();
+            con = DatabaseConnection.getConnection();
+            ps = con.prepareStatement("SELECT * FROM episodes");
+            rs = ps.executeQuery();
             while(rs.next()){
                 int id = rs.getInt(1);
                 String name = rs.getString(2);
@@ -55,13 +59,21 @@ public class EpisodeRepository {
 
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while getting episode: " + e.getMessage());
+        } finally {
+            try {
+                ps.close();
+                con.close();
+                rs.close();
+            } catch (SQLException throwables){
+                throwables.printStackTrace();
+            }
         }
     }
 
     public Episode getById(int id){
         try{
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM episodes WHERE id = ?");
+            con = DatabaseConnection.getConnection();
+            ps = con.prepareStatement("SELECT * FROM episodes WHERE id = ?");
             ps.setInt(1, id);
 
             try {
@@ -77,14 +89,22 @@ public class EpisodeRepository {
 
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while getting film: " + e.getMessage());
+        } finally {
+            try {
+                ps.close();
+                con.close();
+                rs.close();
+            } catch (SQLException throwables){
+                throwables.printStackTrace();
+            }
         }
     }
 
     public Episode update(int id, Episode episode) {
 
         try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("UPDATE episodes SET name = ?, duration = ?, series_id = ? WHERE id = ?");
+            con = DatabaseConnection.getConnection();
+            ps = con.prepareStatement("UPDATE episodes SET name = ?, duration = ?, series_id = ? WHERE id = ?");
 
             ps.setString(1, episode.getName());
             ps.setInt(2, episode.getDuration());
@@ -100,13 +120,20 @@ public class EpisodeRepository {
 
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while updating film: " + e.getMessage());
+        } finally {
+            try {
+                ps.close();
+                con.close();
+            } catch (SQLException throwables){
+                throwables.printStackTrace();
+            }
         }
     }
 
     public void delete(int id){
         try{
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("DELETE FROM episodes WHERE id = ?");
+            con = DatabaseConnection.getConnection();
+            ps = con.prepareStatement("DELETE FROM episodes WHERE id = ?");
 
             ps.setInt(1, id);
 
@@ -116,14 +143,21 @@ public class EpisodeRepository {
 
         }catch (SQLException e){
             throw new DatabaseOperationException("DB error while deleting film: " + e.getMessage());
+        }  finally {
+            try {
+                ps.close();
+                con.close();
+            } catch (SQLException throwables){
+                throwables.printStackTrace();
+            }
         }
     }
 
     public boolean existsBySeriesIdAndEpisodeName(int series_id, String name) {
 
         try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT 1 FROM episodes WHERE series_id = ? AND name = ?");
+            con = DatabaseConnection.getConnection();
+            ps = con.prepareStatement("SELECT 1 FROM episodes WHERE series_id = ? AND name = ?");
             ps.setInt(1, series_id);
             ps.setString(2, name);
 
@@ -133,6 +167,13 @@ public class EpisodeRepository {
 
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while checking episode duplicate: " + e.getMessage());
+        } finally {
+            try {
+                ps.close();
+                con.close();
+            } catch (SQLException throwables){
+                throwables.printStackTrace();
+            }
         }
     }
 }

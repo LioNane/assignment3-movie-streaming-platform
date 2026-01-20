@@ -18,6 +18,14 @@ public class Film extends Content implements Playable{
     public String getContentType() {
         return "Film";
     }
+    @Override
+    public void displayInfo(){
+        System.out.println(getContentType() + ":" + "\n" +
+                "ID: " + getId() + "\n" +
+                "Title: " + getName() + "\n" +
+                "Rating: " + getName() + "/10" + "\n" +
+                "Duration: " + countDuration());
+    }
 
     @Override
     public void validate() throws InvalidInputException {

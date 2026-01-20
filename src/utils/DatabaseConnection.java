@@ -1,12 +1,11 @@
 package utils;
 
-import exception.*;
 import java.sql.*;
 
 public class DatabaseConnection {
-    private static final String connectionURL = "jdbc:postgresql://localhost:5432/movie-streaming-platform";
-    private static final String user = "postgres";
-    private static final String password = "asdf";
+    static String connectionURL = "jdbc:postgresql://localhost:5432/movie-streaming-platform";
+    static String user = "postgres";
+    static String password = "asdf";
 
 
     public static Connection getConnection() throws SQLException{

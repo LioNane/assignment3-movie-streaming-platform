@@ -8,11 +8,15 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class SeriesRepository {
+    private Connection con = null;
+    private PreparedStatement ps = null;
+    private ResultSet rs = null;
+
     public Series create(Series series) {
 
         try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("INSERT INTO series VALUES (?,?,?)");
+            con = DatabaseConnection.getConnection();
+            ps = con.prepareStatement("INSERT INTO series VALUES (?,?,?)");
 
             ps.setInt(1, series.getId());
             ps.setString(2, series.getName());
@@ -22,26 +26,26 @@ public class SeriesRepository {
             if (affectedRows == 0) {
                 throw new DatabaseOperationException("Creating series failed, no rows affected.");
             }
-            try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) {
-                    series.setId(keys.getInt(1));
-                    return series;
-                } else {
-                    throw new DatabaseOperationException("Creating series failed, no ID obtained.");
-                }
-            }
+            return series;
 
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while creating series: " + e.getMessage());
+        } finally {
+            try {
+                ps.close();
+                con.close();
+            } catch (SQLException throwables){
+                throwables.printStackTrace();
+            }
         }
     }
 
     public ArrayList<Series> getAll(){
         ArrayList<Series> series = new ArrayList<>();
         try{
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM series");
-            ResultSet rs = ps.executeQuery();
+            con = DatabaseConnection.getConnection();
+            ps = con.prepareStatement("SELECT * FROM series");
+            rs = ps.executeQuery();
             while(rs.next()){
                 int id = rs.getInt(1);
                 String name = rs.getString(2);
@@ -52,17 +56,25 @@ public class SeriesRepository {
 
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while getting series: " + e.getMessage());
+        } finally {
+            try {
+                ps.close();
+                con.close();
+                rs.close();
+            } catch (SQLException throwables){
+                throwables.printStackTrace();
+            }
         }
     }
 
     public Series getById(int id){
         try{
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM series WHERE id = ?");
+            con = DatabaseConnection.getConnection();
+            ps = con.prepareStatement("SELECT * FROM series WHERE id = ?");
             ps.setInt(1, id);
 
             try {
-                ResultSet rs = ps.executeQuery();
+                rs = ps.executeQuery();
                 String name = rs.getString(2);
                 float rating = rs.getFloat(3);
                 return new Series(id, name, rating);
@@ -73,14 +85,22 @@ public class SeriesRepository {
 
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while getting series: " + e.getMessage());
+        } finally {
+            try {
+                ps.close();
+                con.close();
+                rs.close();
+            } catch (SQLException throwables){
+                throwables.printStackTrace();
+            }
         }
     }
 
     public Series update(int id, Series series) {
 
         try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("UPDATE series SET name = ?, rating = ? WHERE id = ?");
+            con = DatabaseConnection.getConnection();
+            ps = con.prepareStatement("UPDATE series SET name = ?, rating = ? WHERE id = ?");
 
             ps.setString(1, series.getName());
             ps.setFloat(2, series.getRating());
@@ -96,13 +116,20 @@ public class SeriesRepository {
 
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while updating series: " + e.getMessage());
+        } finally {
+            try {
+                ps.close();
+                con.close();
+            } catch (SQLException throwables){
+                throwables.printStackTrace();
+            }
         }
     }
 
     public void delete(int id){
         try{
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("DELETE FROM series WHERE id = ?");
+            con = DatabaseConnection.getConnection();
+            ps = con.prepareStatement("DELETE FROM series WHERE id = ?");
 
             ps.setInt(1, id);
 
@@ -112,13 +139,20 @@ public class SeriesRepository {
 
         }catch (SQLException e){
             throw new DatabaseOperationException("DB error while deleting series: " + e.getMessage());
+        } finally {
+            try {
+                ps.close();
+                con.close();
+            } catch (SQLException throwables){
+                throwables.printStackTrace();
+            }
         }
     }
 
     public boolean existsByName(String name) {
         try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT 1 FROM series WHERE name = ?");
+            con = DatabaseConnection.getConnection();
+            ps = con.prepareStatement("SELECT 1 FROM series WHERE name = ?");
 
             ps.setString(1, name);
 
@@ -128,6 +162,13 @@ public class SeriesRepository {
 
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while checking series duplicate: " + e.getMessage());
+        } finally {
+            try {
+                ps.close();
+                con.close();
+            } catch (SQLException throwables){
+                throwables.printStackTrace();
+            }
         }
     }
 }

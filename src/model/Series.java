@@ -17,6 +17,13 @@ public class Series extends Content implements Playable{
         this.episodes = episodes;
     }
 
+    private void listEpisodes(){
+        String names = "";
+        for(Episode episode: episodes){
+            System.out.println(episode.getName());
+        }
+    }
+
     public void addEpisode(Episode episode) {
         episodes.add(episode);
     }
@@ -32,6 +39,17 @@ public class Series extends Content implements Playable{
     @Override
     public String getContentType(){
         return "Series";
+    }
+
+    @Override
+    public void displayInfo(){
+        System.out.println(getContentType() + ":" + "\n" +
+                "ID: " + getId() + "\n" +
+                "Title: " + getName() + "\n" +
+                "Rating: " + getName() + "/10" + "\n" +
+                "Duration: " + countDuration() + "\n" +
+                "List of episodes: ");
+        listEpisodes();
     }
 
     @Override

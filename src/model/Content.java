@@ -33,6 +33,11 @@ abstract class Content implements Validatable{
 
     abstract protected int countDuration();
     abstract protected String getContentType();
+    abstract protected void displayInfo();
+
+    public boolean isHighlyRated(){
+        return (rating >= 8.0);
+    }
 
     protected void displayBaseInfo(){
         System.out.println("Type:" + getContentType() + "\n" +
