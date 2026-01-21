@@ -17,12 +17,6 @@ public class Series extends Content implements Playable{
         this.episodes = episodes;
     }
 
-    private void listEpisodes(){
-        String names = "";
-        for(Episode episode: episodes){
-            System.out.println(episode.getName());
-        }
-    }
 
     public void addEpisode(Episode episode) {
         episodes.add(episode);
@@ -48,8 +42,7 @@ public class Series extends Content implements Playable{
                 "Title: " + getName() + "\n" +
                 "Rating: " + getName() + "/10" + "\n" +
                 "Duration: " + countDuration() + "\n" +
-                "List of episodes: ");
-        listEpisodes();
+                "Count of episodes: " + episodes.size());
     }
 
     @Override

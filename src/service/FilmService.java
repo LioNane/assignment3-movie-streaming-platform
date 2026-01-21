@@ -4,6 +4,7 @@ import exception.*;
 import model.Film;
 import repository.FilmRepository;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class FilmService {
@@ -13,7 +14,7 @@ public class FilmService {
         this.filmRepository = filmRepository;
     }
 
-    public Film create(Film film){
+    public Film create(Film film) throws SQLException {
         film.validate();
         if(filmRepository.existsByName(film.getName())){
             throw new DuplicateResourceException("Film with the name:" + " already exists");
@@ -29,7 +30,7 @@ public class FilmService {
         return filmRepository.getById(id);
     }
 
-    public Film update(int id, Film film){
+    public Film update(int id, Film film) throws SQLException {
         film.validate();
         if(filmRepository.existsByName(film.getName())){
             throw new DuplicateResourceException("Film with the name:" + " already exists");

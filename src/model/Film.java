@@ -10,6 +10,10 @@ public class Film extends Content implements Playable{
         this.duration = duration;
     }
 
+    public int getDuration() {
+        return duration;
+    }
+
     @Override
     public int countDuration(){
          return duration;

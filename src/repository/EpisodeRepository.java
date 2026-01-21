@@ -9,20 +9,17 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class EpisodeRepository {
-    private Connection con = null;
-    private PreparedStatement ps = null;
-    private ResultSet rs = null;
 
     public Episode create(Episode episode) {
 
-        try {
-            con = DatabaseConnection.getConnection();
-            ps = con.prepareStatement("INSERT INTO episodes VALUES (?,?,?,?)");
-
+        try (
+            Connection con = DatabaseConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement("INSERT INTO episodes VALUES (?,?,?,?)");
+        ){
             ps.setInt(1, episode.getId());
             ps.setString(2, episode.getName());
             ps.setInt(3, episode.getDuration());
-            ps.setInt(4, episode.getSeries_id());
+            ps.setInt(4, episode.getSeriesId());
 
             int affectedRows = ps.executeUpdate();
             if (affectedRows == 0) {
@@ -32,109 +29,82 @@ public class EpisodeRepository {
             return episode;
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while creating episode: " + e.getMessage());
-        } finally {
-            try {
-                ps.close();
-                con.close();
-            } catch (SQLException throwables){
-                throwables.printStackTrace();
-            }
         }
     }
 
     public ArrayList<Episode> getAll(){
         ArrayList<Episode> episodes = new ArrayList<>();
-        try{
-            con = DatabaseConnection.getConnection();
-            ps = con.prepareStatement("SELECT * FROM episodes");
-            rs = ps.executeQuery();
+        try(
+            Connection con = DatabaseConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM episodes");
+            ResultSet rs = ps.executeQuery();
+        ){
             while(rs.next()){
                 int id = rs.getInt(1);
                 String name = rs.getString(2);
                 int duration = rs.getInt(3);
-                int series_id = rs.getInt(4);
-                episodes.add(new Episode(id, name, duration, series_id));;
+                int seriesId = rs.getInt(4);
+                episodes.add(new Episode(id, name, duration, seriesId));;
             }
             return episodes;
 
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while getting episode: " + e.getMessage());
-        } finally {
-            try {
-                ps.close();
-                con.close();
-                rs.close();
-            } catch (SQLException throwables){
-                throwables.printStackTrace();
-            }
         }
     }
 
     public Episode getById(int id){
-        try{
-            con = DatabaseConnection.getConnection();
-            ps = con.prepareStatement("SELECT * FROM episodes WHERE id = ?");
+        try(
+            Connection con = DatabaseConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM episodes WHERE id = ?");
+            ){
             ps.setInt(1, id);
 
-            try {
-                ResultSet rs = ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()){
+                if(!rs.next()){
+                    throw new ResourceNotFoundException("Episode with id = " + id + " not found");
+
+                }
                 String name = rs.getString(2);
                 int duration = rs.getInt(3);
-                int series_id = rs.getInt(4);
-                return new Episode(id, name, duration, series_id);
-            } catch (SQLException e) {
-                throw new ResourceNotFoundException("Film with id = " + id + " not found");
+                int seriesId = rs.getInt(4);
+                return new Episode(id, name, duration, seriesId);
             }
 
 
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while getting film: " + e.getMessage());
-        } finally {
-            try {
-                ps.close();
-                con.close();
-                rs.close();
-            } catch (SQLException throwables){
-                throwables.printStackTrace();
-            }
         }
     }
 
     public Episode update(int id, Episode episode) {
 
-        try {
-            con = DatabaseConnection.getConnection();
-            ps = con.prepareStatement("UPDATE episodes SET name = ?, duration = ?, series_id = ? WHERE id = ?");
-
+        try (
+            Connection con = DatabaseConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement("UPDATE episodes SET name = ?, duration = ?, series_id = ? WHERE id = ?");
+        ){
             ps.setString(1, episode.getName());
             ps.setInt(2, episode.getDuration());
-            ps.setInt(3, episode.getSeries_id());
+            ps.setInt(3, episode.getSeriesId());
             ps.setInt(4, id);
 
             int affectedRows = ps.executeUpdate();
             if (affectedRows == 0) {
-                throw new ResourceNotFoundException("Episode with id=" + id + " not found (update failed)");
+                throw new ResourceNotFoundException("Episode with id = " + id + " not found (update failed)");
             }
             return getById(id);
 
 
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while updating film: " + e.getMessage());
-        } finally {
-            try {
-                ps.close();
-                con.close();
-            } catch (SQLException throwables){
-                throwables.printStackTrace();
-            }
         }
     }
 
     public void delete(int id){
-        try{
-            con = DatabaseConnection.getConnection();
-            ps = con.prepareStatement("DELETE FROM episodes WHERE id = ?");
-
+        try(
+            Connection con = DatabaseConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement("DELETE FROM episodes WHERE id = ?");
+        ){
             ps.setInt(1, id);
 
             if (ps.executeUpdate() == 0) {
@@ -143,22 +113,16 @@ public class EpisodeRepository {
 
         }catch (SQLException e){
             throw new DatabaseOperationException("DB error while deleting film: " + e.getMessage());
-        }  finally {
-            try {
-                ps.close();
-                con.close();
-            } catch (SQLException throwables){
-                throwables.printStackTrace();
-            }
         }
     }
 
-    public boolean existsBySeriesIdAndEpisodeName(int series_id, String name) {
+    public boolean existsBySeriesIdAndEpisodeName(int seriesId, String name) {
 
-        try {
-            con = DatabaseConnection.getConnection();
-            ps = con.prepareStatement("SELECT 1 FROM episodes WHERE series_id = ? AND name = ?");
-            ps.setInt(1, series_id);
+        try (
+            Connection con = DatabaseConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement("SELECT 1 FROM episodes WHERE series_id = ? AND name = ?");
+        ){
+            ps.setInt(1, seriesId);
             ps.setString(2, name);
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -167,13 +131,6 @@ public class EpisodeRepository {
 
         } catch (SQLException e) {
             throw new DatabaseOperationException("DB error while checking episode duplicate: " + e.getMessage());
-        } finally {
-            try {
-                ps.close();
-                con.close();
-            } catch (SQLException throwables){
-                throwables.printStackTrace();
-            }
         }
     }
 }

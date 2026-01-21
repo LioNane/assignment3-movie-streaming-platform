@@ -18,10 +18,10 @@ public class EpisodeService {
     public Episode create(Episode episode){
         episode.validate();
 
-        seriesRepository.getById(episode.getSeries_id());
+        seriesRepository.getById(episode.getSeriesId());
 
-        if(episodeRepository.existsBySeriesIdAndEpisodeName(episode.getSeries_id(), episode.getName())){
-            throw new DuplicateResourceException("Episode with the name:" + " already exists in series_id = " + episode.getSeries_id());
+        if(episodeRepository.existsBySeriesIdAndEpisodeName(episode.getSeriesId(), episode.getName())){
+            throw new DuplicateResourceException("Episode with the name:" + " already exists in series_id = " + episode.getSeriesId());
         }
         return episodeRepository.create(episode);
     }
