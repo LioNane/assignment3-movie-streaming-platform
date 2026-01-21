@@ -17,3 +17,7 @@ CREATE TABLE episodes(
 
     FOREIGN KEY (series_id) REFERENCES series(id)
 );
+
+INSERT INTO films VALUES (1,'Inception',148,8.8);
+INSERT INTO series VALUES (1,'Breaking Bad',9.5);
+INSERT INTO episodes VALUES (1,'Pilot',58,1);
