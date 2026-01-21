@@ -14,37 +14,29 @@ abstract class Content implements Validatable{
         setRating(rating);
     }
 
-    public int getId(){
+    protected int getId(){
         return id;
     }
-    public void setId(int id){
+    protected void setId(int id){
         this.id = id;
     }
 
-    public String getName(){
+    protected String getName(){
         return name;
     }
     protected void setName(String name){
         this.name = name;
     }
 
-    public float getRating(){ return rating;}
+    protected float getRating(){ return rating;}
     protected void setRating(float rating){this.rating = rating;}
 
     abstract protected int countDuration();
     abstract protected String getContentType();
     abstract protected void displayInfo();
 
-    public boolean isHighlyRated(){
+    protected boolean isHighlyRated(){
         return (rating >= 8.0);
-    }
-
-    protected void displayBaseInfo(){
-        System.out.println("Type:" + getContentType() + "\n" +
-                            "ID: " + id + "\n" +
-                            "Title: " + name + "\n" +
-                            "Rating: " + rating + "/10" + "\n" +
-                            "Duration: " + countDuration());
     }
 
     @Override

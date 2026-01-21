@@ -73,7 +73,7 @@ public class EpisodeRepository {
 
 
         } catch (SQLException e) {
-            throw new DatabaseOperationException("DB error while getting film: " + e.getMessage());
+            throw new DatabaseOperationException("DB error while getting episode: " + e.getMessage());
         }
     }
 
@@ -96,7 +96,7 @@ public class EpisodeRepository {
 
 
         } catch (SQLException e) {
-            throw new DatabaseOperationException("DB error while updating film: " + e.getMessage());
+            throw new DatabaseOperationException("DB error while updating episode: " + e.getMessage());
         }
     }
 
@@ -108,11 +108,11 @@ public class EpisodeRepository {
             ps.setInt(1, id);
 
             if (ps.executeUpdate() == 0) {
-                throw new ResourceNotFoundException("Film with id=" + id + " not found (delete failed)");
+                throw new ResourceNotFoundException("Episode with id = " + id + " not found (delete failed)");
             }
 
         }catch (SQLException e){
-            throw new DatabaseOperationException("DB error while deleting film: " + e.getMessage());
+            throw new DatabaseOperationException("DB error while deleting episode: " + e.getMessage());
         }
     }
 

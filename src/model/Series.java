@@ -17,6 +17,20 @@ public class Series extends Content implements Playable{
         this.episodes = episodes;
     }
 
+    public int getId(){
+        return super.getId();
+    }
+    public void setId(int id){
+        super.setId(id);
+    }
+
+    public String getName(){
+        return super.getName();
+    }
+
+
+    public float getRating(){ return super.getRating();}
+    public void setRating(float rating){super.setRating(rating);}
 
     public void addEpisode(Episode episode) {
         episodes.add(episode);
@@ -40,22 +54,26 @@ public class Series extends Content implements Playable{
         System.out.println(getContentType() + ":" + "\n" +
                 "ID: " + getId() + "\n" +
                 "Title: " + getName() + "\n" +
-                "Rating: " + getName() + "/10" + "\n" +
-                "Duration: " + countDuration() + "\n" +
-                "Count of episodes: " + episodes.size());
+                "Rating: " + getRating() + "/10" + "\n" +
+                "Duration: " + countDuration() + "\n");
     }
 
     @Override
     public void validate() throws InvalidInputException {
         super.validate();
-        if(episodes.getFirst() == null){
-            throw new InvalidInputException("Invalid input");
-        }
     }
 
     @Override
     public void play(){
-        System.out.println("Play first episode: " + episodes.getFirst().getName());
+        if (episodes.isEmpty()){
+            System.out.println("No episodes");
+        } else {
+            System.out.println("Play first episode: " + episodes.getFirst().getName());
+        }
+    }
+
+    public boolean isHighlyRated(){
+        return super.isHighlyRated();
     }
 
 }

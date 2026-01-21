@@ -10,9 +10,23 @@ public class Film extends Content implements Playable{
         this.duration = duration;
     }
 
+    public int getId(){
+        return super.getId();
+    }
+    public void setId(int id){
+        super.setId(id);
+    }
+
+    public String getName(){
+        return super.getName();
+    }
+
     public int getDuration() {
         return duration;
     }
+
+    public float getRating(){ return super.getRating();}
+    public void setRating(float rating){super.setRating(rating);}
 
     @Override
     public int countDuration(){
@@ -27,7 +41,7 @@ public class Film extends Content implements Playable{
         System.out.println(getContentType() + ":" + "\n" +
                 "ID: " + getId() + "\n" +
                 "Title: " + getName() + "\n" +
-                "Rating: " + getName() + "/10" + "\n" +
+                "Rating: " + getRating() + "/10" + "\n" +
                 "Duration: " + countDuration());
     }
 
@@ -42,6 +56,10 @@ public class Film extends Content implements Playable{
     @Override
     public void play(){
         System.out.println("Play film: " + getName());
+    }
+
+    public boolean isHighlyRated(){
+        return super.isHighlyRated();
     }
 
 }

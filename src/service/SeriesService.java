@@ -15,31 +15,28 @@ public class SeriesService {
         this.seriesRepository = seriesRepository;
     }
 
-    public Series create(Series series){
+    public Series createSeries(Series series){
         series.validate();
         if(seriesRepository.existsByName(series.getName())){
-            throw new DuplicateResourceException("Series with the name:" + " already exists");
+            throw new DuplicateResourceException("Series with the name: " + series.getName() + " already exists");
         }
         return seriesRepository.create(series);
     }
 
-    public ArrayList<Series> getAll(){
+    public ArrayList<Series> getAllSeries(){
         return seriesRepository.getAll();
     }
 
-    public Series getById(int id){
+    public Series getSeriesById(int id){
         return seriesRepository.getById(id);
     }
 
-    public Series update(int id, Series series){
+    public Series updateSeries(int id, Series series){
         series.validate();
-        if(seriesRepository.existsByName(series.getName())){
-            throw new DuplicateResourceException("Film with the name:" + " already exists");
-        }
         return seriesRepository.update(id, series);
     }
 
-    public void delete(int id){
+    public void deleteSeries(int id){
         seriesRepository.delete(id);
     }
 }

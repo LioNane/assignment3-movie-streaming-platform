@@ -37,6 +37,13 @@ public class Episode implements Validatable, Playable{
         return duration;
     }
 
+    public void displayEpisodeInfo(){
+        System.out.println("Episode title:" + name + "\n" +
+                "ID: " + id + "\n" +
+                "Duration: " + duration + "\n" +
+                "Series ID: " + seriesId);
+    }
+
     @Override
     public void validate() throws InvalidInputException {
         if(id <= 0 || name.isEmpty() || duration <= 0){
