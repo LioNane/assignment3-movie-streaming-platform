@@ -20,6 +20,7 @@ D. Controller
 
 CRUD operations allows users to interact with DB, create entities, get entities, update and delete them
 Request delete episode with id = 2, result: episode was deleted.
+Request create with name = "", result: validation error.
 
 E. Instructions to Compile and Run
 
